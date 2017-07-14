@@ -1,6 +1,7 @@
 {
     "*": {
         ">=3000": [
+            "requests",
             "shellenv",
 			"golangconfig"
         ],
