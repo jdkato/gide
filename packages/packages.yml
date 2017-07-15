@@ -1,0 +1,32 @@
+# Most of these packages came from https://github.com/avelino/awesome-go.
+Audio:
+  - name: flac
+    url: github.com/mewkiz/flac
+    stars: 69
+    license: MIT
+    summary: A native Go FLAC decoder.
+  - name: GAAD
+    url: github.com/Comcast/gaad
+    stars: 30
+    license: Apache-2.0
+    summary: A native Go AAC bitstream parser.
+  - name: gosamplerate
+    url: github.com/dh1tw/gosamplerate
+    stars: 30
+    license: BSD 2-clause
+    summary: libsamplerate bindings for go.
+  - name: id3v2
+    url: github.com/bogem/id3v2
+    stars: 41
+    license: MIT
+    summary: Fast and stable ID3 parsing and writing library for Go.
+  - name: mix
+    url: github.com/go-mix/mix
+    stars: 58
+    license: MIT
+    summary: Sequence-based Go-native audio mixer for music apps.
+  - name: mp3
+    url: github.com/tcolgate/mp3
+    stars: 57
+    license: MIT
+    summary: A native Go MP3 decoder.

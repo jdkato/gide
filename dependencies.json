@@ -3,7 +3,8 @@
         ">=3000": [
             "requests",
             "shellenv",
-            "golangconfig"
+            "golangconfig",
+            "pyyaml"
         ],
         ">=3124": [
             "pygments",
@@ -12,7 +13,6 @@
             "python-jinja2",
             "markupsafe",
             "pymdownx",
-            "pyyaml"
         ]
     }
 }
