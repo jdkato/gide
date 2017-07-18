@@ -1,11 +1,5 @@
 {
     "*": {
-        ">=3000": [
-            "requests",
-            "shellenv",
-            "golangconfig",
-            "pyyaml"
-        ],
         ">=3124": [
             "pygments",
             "python-markdown",
@@ -13,6 +7,7 @@
             "python-jinja2",
             "markupsafe",
             "pymdownx",
+            "pyyaml"
         ]
     }
 }
