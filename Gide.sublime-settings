@@ -1,0 +1,8 @@
+{
+    // Popup configuration:
+
+    "popup_width": 600,
+    "popup_css": "Packages/Gide/static/gide.css",
+
+    "debug": true,
+}

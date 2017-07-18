@@ -3,6 +3,49 @@ import os
 
 import sublime
 
+SETTINGS_FILE = 'Gide.sublime-settings'
+
+
+def set_status(msg):
+    """Print a message to the active window's status bar.
+    """
+    msg = 'Gide: {0}'.format(msg)
+    sublime.active_window().active_view().set_status('Gide', msg)
+
+
+def debug(message, prefix='Gide', level='debug'):
+    """Print a formatted entry to the console.
+
+    Args:
+        message (str): A message to print to the console
+        prefix (str): An optional prefix
+        level (str): One of debug, info, warning, error [Default: debug]
+
+    Returns:
+        str: Issue a standard console print command.
+    """
+    if get_setting('debug'):
+        print('{prefix}: [{level}] {message}'.format(
+            message=message,
+            prefix=prefix,
+            level=level
+        ))
+
+
+def get_setting(name):
+    """Return the value associated with the setting `name`.
+    """
+    settings = sublime.load_settings(SETTINGS_FILE)
+    return settings.get(name, '')
+
+
+def set_setting(name, value):
+    """Store and save `name` as `value`.
+    """
+    settings = sublime.load_settings(SETTINGS_FILE)
+    settings.set(name, value)
+    sublime.save_settings(SETTINGS_FILE)
+
 
 def load_template(name):
     """...
@@ -36,54 +79,3 @@ def run_command(command, stdin):
 
     stdout, stderr = p.communicate(stdin.encode('utf-8'))
     return stdout.decode('utf-8'), stderr.decode('utf-8'), p.returncode
-
-
-class GideSettings(object):
-    """Global access to and management of Gide's settings.
-    """
-    settings_file = 'Gide.sublime-settings'
-    settings = sublime.load_settings(settings_file)
-
-    def __init__(self):
-        self.error_template = None
-        self.warning_template = None
-        self.info_template = None
-        self.css = None
-        self.settings.add_on_change('reload', lambda: self.load())
-        self.load()
-
-    def load(self):
-        """Load Vale's settings.
-        """
-        self.settings = sublime.load_settings(self.settings_file)
-        self.__load_resources()
-
-    def put(self, setting, value):
-        """Store and save `setting` as `value`.
-        Args:
-            setting (str): The name of the setting to be accessed.
-            value (str, int, bool): The value to be stored.
-        """
-        self.settings.set(setting, value)
-        sublime.save_settings(self.settings_file)
-
-    def get(self, setting):
-        """Return the value associated with `setting`.
-        Args:
-            setting (str): The name of the setting to be accessed.
-        Returns:
-            (str, int, bool): The value associated with `setting`. The default
-                value is ''.
-        """
-        return self.settings.get(setting, '')
-
-    def __load_resources(self):
-        """Load Vale's static resources.
-        """
-        self.error_template = sublime.load_resource(
-            self.settings.get('vale_error_template'))
-        self.warning_template = sublime.load_resource(
-            self.settings.get('vale_warning_template'))
-        self.info_template = sublime.load_resource(
-            self.settings.get('vale_info_template'))
-        self.css = sublime.load_resource(self.settings.get('vale_css'))
