@@ -37,23 +37,20 @@ def get_completions(view, point):
 
 def format_doc(doc):
     """Format a Godoc comment for display in a popup.
-
-    1. Add an extra space to lines the start with at least 3 spaces (it appears
-       that gogetdoc strips one space?) so that the content renders as a code
-       block.
-    2. Replace all newlines that separate a word or punctuation on the left
-       from a word character on the right so that the popup will use
-       line-wrapping instead of line-breaks.
-    3. Replace tabs with 4 spaces.
-    4. Strip ending whitespace.
     """
     fixed = ''
     for line in doc.split('\n'):
-        if line.startswith('   '):
-            line = ' ' + line
-        elif line.startswith('\t'):
-            line = line.replace('\t', '\n    ')
+        if line.startswith(' ') or line.startswith('\t'):
+            # We assume lines starting with a space or tab are intended to be
+            # code blocks.
+            line = line.strip('\t')
+            while not line.startswith('    '):
+                # We need 4 leading spaces.
+                line = ' ' + line
+            line = '\n' + line
         fixed += (line + '\n')
+    # Lastly, we want to use line-wrapping rather than hard line breaks in the
+    # pop-up, so we replace single newlines with spaces.
     return re.sub(r'(?<=[.!?,;\w])\n(?=\w)', ' ', fixed.strip())
 
 
@@ -75,7 +72,7 @@ def show_signature(view, point, flags):
         return
 
     results = json.loads(stdout)
-    print(results)
+    util.debug('signature: {0}'.format(results))
     if results['decl'] and results['doc']:
         md = SIGNATURE.format(
             declaration=results['decl'],
@@ -98,7 +95,7 @@ def handle_hint_navigation(url, args):
     if url == 'goto-def' and pos:
         sublime.active_window().open_file(pos, sublime.ENCODED_POSITION)
     elif url == 'goto-def' and args.get('import') == 'builtin':
-        util.set_status('can\'t navigate to built-in symbol.')
+        util.set_status('can\'t navigate to built-in symbol')
     elif url == 'godoc':
         # Format the URL
         has_type = HAS_TYPE.search(args['decl'])
