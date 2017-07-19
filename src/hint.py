@@ -115,6 +115,8 @@ def handle_hint_navigation(url, args):
 class GideHintEventListener(sublime_plugin.EventListener):
     """GideHintEventListener handles events related to in-editor hints.
     """
+    paren_pressed_point = None
+
     def on_query_completions(self, view, prefix, locations):
         """Get completions from `gocode`.
         """
@@ -123,22 +125,47 @@ class GideHintEventListener(sublime_plugin.EventListener):
             return
         return get_completions(view, point)
 
+    def on_query_context(self, view, key, operator, operand, match_all):
+        """
+        Here, we look for the 'signature_trigger' key and store the location
+        one unit back for use in `on_modified_async`.
+        """
+        if not util.is_golang(view):
+            return
+
+        if key == 'signature_trigger':
+            self.paren_pressed_point = view.sel()[0].begin() - 1
+            return False
+
     def on_modified_async(self, view):
+        """
+        If `signature_trigger` is set to either "edit" or "both" in the user's
+        settings and they're currently in a Golang file, we display a signature
+        after they press the "(" key.
+        """
         if view.command_history(0)[0] in ('expand_tabs', 'unexpand_tabs'):
             return
 
-        if not util.is_golang(view):  # TODO: check settings
+        trigger = util.get_setting('signature_trigger')
+        if not util.is_golang(view) or trigger in ('none', 'hover'):
             return
 
-        point = view.rowcol(view.sel()[0].begin())
-        if view.substr(view.sel()[0].begin()) in ['(', ')']:
-            point = (point[0], point[1] - 1)
-
-        show_signature(view, point, sublime.COOPERATE_WITH_AUTO_COMPLETE)
+        point = self.paren_pressed_point
+        self.paren_pressed_point = None
+        if point is not None:
+            show_signature(view, point, sublime.COOPERATE_WITH_AUTO_COMPLETE)
 
     def on_hover(self, view, point, hover_zone):
-        """Show popup signature from `gogetdoc`.
+        """
+        If `signature_trigger` is set to either "hover" or "both" in the user's
+        settings and they're currently in a Golang file, we display a signature
+        whenever they hover over a symbol.
         """
         if hover_zone != sublime.HOVER_TEXT or not util.is_golang(view):
             return
+
+        trigger = util.get_setting('signature_trigger')
+        if trigger in ('none', 'edit'):
+            return
+
         show_signature(view, point, sublime.HIDE_ON_MOUSE_MOVE_AWAY)

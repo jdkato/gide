@@ -1,8 +1,9 @@
 {
-    // Popup configuration:
-
+    // Signature configuration:
     "popup_width": 600,
     "popup_css": "Packages/Gide/static/gide.css",
+    // "hover", "edit", "both", or "none"
+    "signature_trigger": "both",
 
     "debug": true,
 }
