@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "Gide: Show Signature",
+        "command": "gide_signature"
+    },
+]

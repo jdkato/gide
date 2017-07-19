@@ -1,0 +1,14 @@
+[
+    {
+        "caption": "Gide",
+        "id": "gide_context",
+        "children":
+        [
+            {
+                "command": "gide_signature",
+                "id": "gide_signature",
+                "caption": "Show Signature"
+            },
+        ]
+    }
+]

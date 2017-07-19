@@ -112,6 +112,21 @@ def handle_hint_navigation(url, args):
             util.set_status('no page available at {0}'.format(p))
 
 
+class GideSignatureCommand(sublime_plugin.TextCommand):
+    """GideSignatureCommand allows the user to trigger in-editor hints.
+    """
+    def run(self, edit):
+        """Show the signature for the symbol under the cursor.
+        """
+        point = self.view.sel()[0].begin()
+        show_signature(self.view, point, sublime.HIDE_ON_MOUSE_MOVE_AWAY)
+
+    def is_enabled(self):
+        """We only want to be available for Golang source.
+        """
+        return util.is_golang(self.view)
+
+
 class GideHintEventListener(sublime_plugin.EventListener):
     """GideHintEventListener handles events related to in-editor hints.
     """
