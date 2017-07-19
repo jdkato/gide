@@ -42,14 +42,17 @@ def format_doc(doc):
        that gogetdoc strips one space?) so that the content renders as a code
        block.
     2. Replace all newlines that separate a word or punctuation on the left
-       from a word character on the right so that the popup will use l
-       ine-wrapping instead of line-breaks.
-    3. Strip ending whitespace.
+       from a word character on the right so that the popup will use
+       line-wrapping instead of line-breaks.
+    3. Replace tabs with 4 spaces.
+    4. Strip ending whitespace.
     """
     fixed = ''
     for line in doc.split('\n'):
         if line.startswith('   '):
             line = ' ' + line
+        elif line.startswith('\t'):
+            line = line.replace('\t', '\n    ')
         fixed += (line + '\n')
     return re.sub(r'(?<=[.!?,;\w])\n(?=\w)', ' ', fixed.strip())
 
@@ -72,6 +75,7 @@ def show_signature(view, point, flags):
         return
 
     results = json.loads(stdout)
+    print(results)
     if results['decl'] and results['doc']:
         md = SIGNATURE.format(
             declaration=results['decl'],
