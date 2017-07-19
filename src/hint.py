@@ -10,6 +10,8 @@ import sublime_plugin
 from . import util
 
 SIGNATURE = util.load_template('signature.md')
+HAS_TYPE = re.compile('func \(\w+ \*?(\w+)\) .*')
+DOC_URL = 'https://godoc.org/{0}#{1}'
 
 
 def get_completions(view, point):
@@ -94,7 +96,15 @@ def handle_hint_navigation(url, args):
     elif url == 'goto-def' and args.get('import') == 'builtin':
         util.set_status('can\'t navigate to built-in symbol.')
     elif url == 'godoc':
-        p = 'https://godoc.org/{0}#{1}'.format(args['import'], args['name'])
+        # Format the URL
+        has_type = HAS_TYPE.search(args['decl'])
+        if has_type:
+            name = has_type.group(1) + '.' + args['name']
+            p = DOC_URL.format(args['import'], name)
+        else:
+            p = DOC_URL.format(args['import'], args['name'])
+
+        # Open the page
         if urllib.request.urlopen(p).getcode() == 200:
             webbrowser.open(p)
         else:
