@@ -1,3 +1,18 @@
+"""hint.py
+
+This module manages everything to do with in-editor documentation, including
+auto-complete, signature pop-ups, and external documentation access.
+
+It exports the following `sublime_plugin` subclasses:
+
+    * `GideSignatureCommand`: A `TextCommand` that will show a the signature
+       for the symbol under the cursor when activated via the Command Palette
+       or the Context Menu.
+
+    * `GideHintEventListener`: An `EventListener` that controls getting
+       completions from `gocode` and determines (based on the user's settings)
+       when to display signatures.
+"""
 import json
 import re
 import urllib
