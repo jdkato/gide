@@ -3,7 +3,12 @@ from .hint import (
     GideSignatureCommand
 )
 
+from .install import (
+    GidePackageSearchCommand
+)
+
 __all__ = [
     'GideHintEventListener',
-    'GideSignatureCommand'
+    'GideSignatureCommand',
+    'GidePackageSearchCommand'
 ]

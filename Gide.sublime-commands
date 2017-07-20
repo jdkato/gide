@@ -3,4 +3,8 @@
         "caption": "Gide: Show Signature",
         "command": "gide_signature"
     },
+    {
+        "caption": "Gide: Search for Packages",
+        "command": "gide_package_search"
+    },
 ]
