@@ -19,6 +19,7 @@ import urllib
 import webbrowser
 
 import mdpopups
+
 import sublime
 import sublime_plugin
 
@@ -100,6 +101,7 @@ def show_signature(view, point, flags):
             css=sublime.load_resource(util.get_setting('popup_css')),
             location=point,
             max_width=util.get_setting('popup_width'),
+            wrapper_class='gide',
             on_navigate=lambda x: handle_hint_navigation(x, results))
 
 
