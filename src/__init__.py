@@ -1,9 +1,6 @@
 from .hint import (
     GideHintEventListener,
-    GideSignatureCommand
-)
-
-from .install import (
+    GideSignatureCommand,
     GidePackageSearchCommand
 )
 
