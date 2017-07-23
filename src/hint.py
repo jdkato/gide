@@ -90,31 +90,16 @@ def format_doc(doc):
 def show_signature(view, point, flags):
     """Display a documentation signature popup using `gogetdoc`.
     """
-    filename = view.file_name()
-    if not filename:
-        return
-
-    pos = '{0}:#{1}'.format(filename, point)
-    buf = view.substr(sublime.Region(0, view.size()))
-    stdout, stderr, ret = util.run_command(
-        ['gogetdoc', '-u', '-json', '-modified', '-pos', pos],
-        '{0}\n{1}\n{2}'.format(filename, view.size(), buf))
-
-    if ret != 0:
-        util.debug('No signature for {0}'.format(pos))
-        return
-
-    results = json.loads(stdout)
-    util.debug('signature: {0}'.format(results))
-    if results['decl'].startswith('package'):
+    results = util.info_for_symbol(view, point)
+    if results.get('decl', '').startswith('package'):
         md = IMPORT_SIG.format(path='import "{0}"'.format(results['import']))
-    elif results['decl'].startswith('var'):
+    elif results.get('decl', '').startswith('var'):
         path = results['decl'].split(' ')[-1]
         if '/' in path:
             # Don't show the full import path.
             results['decl'] = re.sub('[\w.]+/', '', path)
         md = VAR_SIG.format(declaration=results['decl'])
-    elif results['decl'] and results['doc']:
+    elif results.get('decl') and results.get('doc'):
         md = SIGNATURE.format(
             declaration=results['decl'],
             documentation=format_doc(results['doc']))

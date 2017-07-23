@@ -4,8 +4,13 @@ from .hint import (
     GidePackageSearchCommand
 )
 
+from .navigate import (
+    GideGotoDefCommand
+)
+
 __all__ = [
     'GideHintEventListener',
     'GideSignatureCommand',
-    'GidePackageSearchCommand'
+    'GidePackageSearchCommand',
+    'GideGotoDefCommand'
 ]

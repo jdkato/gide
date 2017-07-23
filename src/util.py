@@ -1,4 +1,5 @@
 import subprocess
+import json
 import os
 
 import sublime
@@ -11,6 +12,26 @@ def set_status(msg):
     """
     msg = 'Gide: {0}'.format(msg)
     sublime.active_window().active_view().set_status('Gide', msg)
+
+
+def info_for_symbol(view, point):
+    """Extract information about the symbol given by `point`.
+    """
+    filename = view.file_name()
+    if not filename:
+        return {}
+
+    pos = '{0}:#{1}'.format(filename, point)
+    buf = view.substr(sublime.Region(0, view.size()))
+    stdout, stderr, ret = run_command(
+        ['gogetdoc', '-u', '-json', '-modified', '-pos', pos],
+        '{0}\n{1}\n{2}'.format(filename, view.size(), buf))
+
+    if ret != 0:
+        debug('No signature for {0}'.format(pos))
+        return {}
+
+    return json.loads(stdout)
 
 
 def debug(message, prefix='Gide', level='debug'):
