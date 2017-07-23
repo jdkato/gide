@@ -5,7 +5,7 @@ from . import util
 
 
 class GideGotoDefCommand(sublime_plugin.WindowCommand):
-    """GideSignatureCommand allows the user to trigger in-editor hints.
+    """GideGotoDefCommand navigates to the user-indicated symbol.
     """
     def run(self):
         """Go to the defintion for the symbol under the cursor.
