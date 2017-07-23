@@ -31,6 +31,8 @@ import sublime_plugin
 from . import util
 
 SIGNATURE = util.load_template('signature.md')
+IMPORT_SIG = util.load_template('import.md')
+VAR_SIG = util.load_template('variable.md')
 PACKAGES = util.load_template('packages.md')
 CSS = '''
 div.gide { padding: 10px; margin: 0; }
@@ -104,20 +106,32 @@ def show_signature(view, point, flags):
 
     results = json.loads(stdout)
     util.debug('signature: {0}'.format(results))
-    if results['decl'] and results['doc']:
+    if results['decl'].startswith('package'):
+        md = IMPORT_SIG.format(path='import "{0}"'.format(results['import']))
+    elif results['decl'].startswith('var'):
+        path = results['decl'].split(' ')[-1]
+        if '/' in path:
+            # Don't show the full import path.
+            results['decl'] = re.sub('[\w.]+/', '', path)
+        md = VAR_SIG.format(declaration=results['decl'])
+    elif results['decl'] and results['doc']:
         md = SIGNATURE.format(
             declaration=results['decl'],
             documentation=format_doc(results['doc']))
+    else:
+        # We don't have enough information to show a popup.
+        util.set_status('No information on symbol.')
+        return
 
-        mdpopups.show_popup(
-            view,
-            content=md,
-            flags=flags,
-            css=sublime.load_resource(util.get_setting('popup_css')),
-            location=point,
-            max_width=util.get_setting('popup_width'),
-            wrapper_class='gide',
-            on_navigate=lambda x: handle_hint_navigation(x, results))
+    mdpopups.show_popup(
+        view,
+        content=md,
+        flags=flags,
+        css=sublime.load_resource(util.get_setting('popup_css')),
+        location=point,
+        max_width=util.get_setting('popup_width'),
+        wrapper_class='gide',
+        on_navigate=lambda x: handle_hint_navigation(x, results))
 
 
 def handle_hint_navigation(url, args):
@@ -137,10 +151,9 @@ def handle_hint_navigation(url, args):
         else:
             p = DOC_URL.format(args['import'], args['name'])
 
-        # Open the page
-        if urllib.request.urlopen(p).getcode() == 200:
+        try:
             webbrowser.open(p)
-        else:
+        except urllib.error.HTTPError:
             util.set_status('no page available at {0}'.format(p))
 
 
