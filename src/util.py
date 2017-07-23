@@ -88,7 +88,7 @@ def run_command(command, stdin):
     """Run the given command.
     """
     startup_info = None
-    if sublime.platform() == 'Windows':
+    if sublime.platform() == 'windows':
         startup_info = subprocess.STARTUPINFO()
         startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
