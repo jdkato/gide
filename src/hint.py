@@ -49,6 +49,9 @@ DOC_URL = 'https://godoc.org/{0}#{1}'
 
 def get_completions(view, point):
     """Return completions using `gocode`.
+
+    TODO: improve suggestions (e.g., see
+    https://github.com/Microsoft/vscode-go/blob/master/src/goSuggest.ts#L38).
     """
     region = view.substr(sublime.Region(0, view.size()))
     stdout, stderr, ret = util.run_command(
