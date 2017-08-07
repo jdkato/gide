@@ -47,30 +47,6 @@ HAS_TYPE = re.compile('func \(\w+ \*?(\w+)\) .*')
 DOC_URL = 'https://godoc.org/{0}#{1}'
 
 
-def get_completions(view, point):
-    """Return completions using `gocode`.
-
-    TODO: improve suggestions (e.g., see
-    https://github.com/Microsoft/vscode-go/blob/master/src/goSuggest.ts#L38).
-    """
-    region = view.substr(sublime.Region(0, view.size()))
-    stdout, stderr, ret = util.run_command(
-        ['gocode', '-f=json', 'autocomplete', str(point)], region)
-
-    if ret != 0:
-        util.debug(
-            'No completions for {0} in {1}'.format(point, view.file_name()))
-        return
-
-    results = json.loads(stdout)
-    if not results:
-        return
-
-    completions = [
-        ('{}\t{}'.format(r['name'], r['type']), r['name']) for r in results[1]]
-    return (completions, sublime.INHIBIT_WORD_COMPLETIONS)
-
-
 def format_doc(doc):
     """Format a Godoc comment for display in a popup.
     """
@@ -218,16 +194,47 @@ class GideSignatureCommand(sublime_plugin.TextCommand):
 
 class GideHintEventListener(sublime_plugin.EventListener):
     """GideHintEventListener handles events related to in-editor hints.
+
+    TODO: improve suggestions.
+    See https://github.com/DisposaBoy/GoSublime/blob/master/gscomplete.py for
+    ideas.
     """
     paren_pressed_point = None
 
     def on_query_completions(self, view, prefix, locations):
         """Get completions from `gocode`.
         """
-        point = view.sel()[0].begin()
-        if not util.is_golang(view, point):
+        pt = locations[0]
+        if not util.is_golang(view, pt):
             return
-        return get_completions(view, point)
+
+        region = view.substr(sublime.Region(0, view.size()))
+        stdout, stderr, ret = util.run_command(
+            ['gocode', '-f=json', 'autocomplete', 'c{0}'.format(pt)], region)
+
+        if ret != 0:
+            util.debug(
+                'Error ({0}) running gocode({1}, {2})'.format(
+                    ret, pt, view.file_name())
+            )
+            return
+
+        results = json.loads(stdout)
+        if not results:
+            util.debug(
+                'No completions for {0} in {1}'.format(pt, view.file_name()))
+            return
+
+        completions = []
+        longest = len(max([r['name'] for r in results[1]], key=len))
+        for r in results[1]:
+            entry = '{0: <{padding}}{1}'.format(
+                r['name'],
+                r['type'],
+                padding=longest + 5)
+            completions.append((entry, r['name']))
+
+        return (completions, sublime.INHIBIT_WORD_COMPLETIONS)
 
     def on_query_context(self, view, key, operator, operand, match_all):
         """

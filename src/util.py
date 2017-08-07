@@ -84,7 +84,7 @@ def is_golang(view, point=None):
     return view.score_selector(point, 'source.go') > 0
 
 
-def run_command(command, stdin):
+def run_command(command, stdin=None):
     """Run the given command.
     """
     startup_info = None
@@ -98,5 +98,9 @@ def run_command(command, stdin):
                          stdout=subprocess.PIPE,
                          startupinfo=startup_info)
 
-    stdout, stderr = p.communicate(stdin.encode('utf-8'))
+    if stdin:
+        stdout, stderr = p.communicate(stdin.encode('utf-8'))
+    else:
+        stdout, stderr = p.communicate()
+
     return stdout.decode('utf-8'), stderr.decode('utf-8'), p.returncode
