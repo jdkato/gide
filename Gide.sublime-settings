@@ -1,5 +1,13 @@
 {
+    // Format configuration:
+
+    // "save" or "command"
+    "fmt_trigger": "save",
+    // "goreturns", "goimports", or "gofmt"
+    "fmt_tool": "goreturns",
+
     // Signature configuration:
+
     "popup_width": 600,
     "popup_css": "Packages/Gide/static/gide.css",
     // "hover", "edit", "both", or "none"
